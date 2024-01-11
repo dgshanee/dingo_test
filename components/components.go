@@ -27,7 +27,7 @@ func PopulateStruct(target interface{}, data map[string]string){
 	}
 }
 
-func UnmarshalJSONToComponent(jsonData []byte) ([]Component, error) {
+func UnmarshalJSONToComponent(jsonData []byte) (*DomMap, error) {
 	var rawMessages []json.RawMessage;
 	if err := json.Unmarshal(jsonData, &rawMessages); err != nil{
 		return nil, err;
@@ -37,6 +37,7 @@ func UnmarshalJSONToComponent(jsonData []byte) ([]Component, error) {
 	}
 
 	var renderers []Component;
+	idMap := make(map[string]Component);
 
 
 	for _,rawMessage := range rawMessages{
@@ -57,9 +58,15 @@ func UnmarshalJSONToComponent(jsonData []byte) ([]Component, error) {
 		}
 
 		renderers = append(renderers, component);
-		
+		if id, ok := component.GetId(); ok{
+			idMap[id] = component;
+		}
 	}
-	return renderers, nil;
+	var domMap = DomMap{
+		domSlice:renderers,
+		domMap: idMap,
+	}
+	return &domMap, nil;
 }
 
 func UnmarshalJSON[T any](jsonData []byte)(T, error){

@@ -53,6 +53,7 @@ func main(){
 
 func buildComponent(){
 	component, ok := user.Prompts["component"];
+	parent, ok := user.Prompts["parent"];
 	if !ok{
 		fmt.Println("No component specified");
 		return;
@@ -61,7 +62,7 @@ func buildComponent(){
 	case "text":
 		var toMarshal components.TextComponent;
 		components.PopulateStruct(&toMarshal, user.Prompts);
-		dom.SaveComponent(toMarshal);
+		dom.SaveComponent(toMarshal, parent);
 	default:
 		panic("Invalid data type");
 	}

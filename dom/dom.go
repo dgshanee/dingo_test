@@ -12,7 +12,7 @@ var(
 	NUM_LINES int = 50
 )
 
-func LoadComponents() ([]components.Component, error){
+func LoadComponents() (*components.DomMap, error){
 	data, err := os.ReadFile("structure.dingo");
 	if err != nil{
 		fmt.Println("Error reading JSON", err);
@@ -28,15 +28,26 @@ func LoadComponents() ([]components.Component, error){
 	return DOMSlice, nil;
 }
 
-func SaveComponent(component components.Component){
+func SaveComponent(component components.Component, parent string){
 	DOMSlice, err := LoadComponents();
 	fmt.Println("DOM",DOMSlice);
 	if err != nil{
 		fmt.Println("Error loading components", err);
 		return;
 	}
-	DOMSlice = append(DOMSlice, component);
-	marshalledComponent, err := json.Marshal(DOMSlice);
+	if parent != ""{
+		parentComponent, ok := DOMSlice.GetComponentById(parent);
+		if !ok {
+			fmt.Println("Invalid parent input");
+			return;
+		}
+
+		parentComponent.AddChild(component);
+	} else {
+		DOMSlice.AddComponent(component);
+	}
+	fmt.Println("Slice", DOMSlice.GetSlice());
+	marshalledComponent, err := json.Marshal(DOMSlice.GetSlice());
 	if err != nil{
 		fmt.Println("Error marshalling DOM", err);
 		return;
@@ -58,7 +69,7 @@ func populateLineMap(){
 		return;
 	}
 
-	for _,component := range DOMSlice{
+	for _,component := range DOMSlice.GetSlice(){
 		ln := component.GetLine();
 		fmt.Println(ln);
 	}
