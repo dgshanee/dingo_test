@@ -3,8 +3,8 @@ package components
 import "encoding/json"
 
 type TextComponent struct {
-	Data      string `json:"data"`
-	Component string `json:"component"`
+	ComponentProp
+	Data string `json:"data"`
 }
 
 func (txt TextComponent) Render() string {

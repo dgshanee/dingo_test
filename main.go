@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"strings"
 )
 
 type UserPrompt struct{
@@ -17,35 +16,48 @@ var(
 	user UserPrompt;
 )
 
-func main(){
-	dom.LoadComponents();
-
+func buildCmd(){
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError);
 	componentCmd := buildCmd.String("component", "", "Creates a component");
-	getData := buildCmd.String("data", "", "User provided data");
+	dataCmd := buildCmd.String("data", "", "User provided data");
+	IDCmd := buildCmd.String("id", "", "User provided ID");
+	parentCmd := buildCmd.String("parent", "", "Parent of the created component");
 
 	if len(os.Args) < 2{
 		fmt.Println("Invalid command");
 		return;
 	}
 
+	err := buildCmd.Parse(os.Args[2:]);
+	if err != nil{
+		fmt.Println("Error parsing commands");
+		return;
+	}
+
+	user.Prompts = make(map[string]string);
+	user.Prompts["component"] = *componentCmd;
+	user.Prompts["data"] = *dataCmd;
+	user.Prompts["id"] = *IDCmd;
+	user.Prompts["parent"] = *parentCmd;
+}
+
+func main(){
+	dom.LoadComponents();
+	buildCmd();
+
 	switch os.Args[1]{
 	case "build":
-		buildComponent(buildCmd, componentCmd, getData);
+		buildComponent();
 	}
 }
 
-func buildComponent(build *flag.FlagSet, component *string, data *string){
-	user.Prompts = make(map[string]string);
-	build.Parse(os.Args[2:]);
-	for i:=2; i<len(os.Args); i+=2{
-		if i+1<len(os.Args){
-			key := strings.TrimPrefix(os.Args[i], "--");
-			user.Prompts[key] = os.Args[i+1];
-		}
+func buildComponent(){
+	component, ok := user.Prompts["component"];
+	if !ok{
+		fmt.Println("No component specified");
+		return;
 	}
-
-	switch *component{
+	switch component{
 	case "text":
 		var toMarshal components.TextComponent;
 		components.PopulateStruct(&toMarshal, user.Prompts);
