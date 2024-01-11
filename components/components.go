@@ -7,21 +7,16 @@ import (
 	"strings"
 )
 
-type Component interface {
-	Render() string;
-}
-
-type ComponentFactory func(jsonData json.RawMessage) (Component, error); 
-
-var componentFactories = map[string]ComponentFactory{
-	"text":TextFactory,
-}
-
 func PopulateStruct(target interface{}, data map[string]string){
 	v := reflect.ValueOf(target).Elem();
 
 	for i:=0; i<v.NumField(); i++{
 		field := v.Field(i);
+
+		if field.Kind() == reflect.Struct{
+			PopulateStruct(field.Addr().Interface(), data);
+			continue;
+		}
 		fieldName := v.Type().Field(i).Name;
 
 		key := strings.ToLower(fieldName);
