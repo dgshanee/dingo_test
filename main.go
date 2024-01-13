@@ -62,9 +62,8 @@ func buildComponent(){
 	case "text":
 		var toMarshal components.TextComponent;
 		components.PopulateStruct(&toMarshal, user.Prompts);
-		dom.SaveComponent(toMarshal, parent);
+		dom.SaveComponent(&toMarshal, parent);
 	default:
 		panic("Invalid data type");
 	}
-	fmt.Println(user.Prompts)
 }

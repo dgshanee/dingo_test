@@ -30,23 +30,22 @@ func LoadComponents() (*components.DomMap, error){
 
 func SaveComponent(component components.Component, parent string){
 	DOMSlice, err := LoadComponents();
-	fmt.Println("DOM",DOMSlice);
 	if err != nil{
 		fmt.Println("Error loading components", err);
 		return;
 	}
 	if parent != ""{
-		parentComponent, ok := DOMSlice.GetComponentById(parent);
-		if !ok {
-			fmt.Println("Invalid parent input");
+		if ok := DOMSlice.AddChildById(parent, component); !ok{
+			fmt.Println("Error adding child");
 			return;
 		}
 
-		parentComponent.AddChild(component);
+		fmt.Println(DOMSlice.GetSlice());
+		
 	} else {
 		DOMSlice.AddComponent(component);
+		fmt.Println(DOMSlice.GetSlice());
 	}
-	fmt.Println("Slice", DOMSlice.GetSlice());
 	marshalledComponent, err := json.Marshal(DOMSlice.GetSlice());
 	if err != nil{
 		fmt.Println("Error marshalling DOM", err);

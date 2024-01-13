@@ -14,5 +14,5 @@ func (txt TextComponent) Render() string {
 func TextFactory(jsonData json.RawMessage) (Component, error) {
 	var txt TextComponent
 	err := json.Unmarshal(jsonData, &txt);
-	return txt, err;
+	return &txt, err;
 }

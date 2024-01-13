@@ -37,7 +37,7 @@ func UnmarshalJSONToComponent(jsonData []byte) (*DomMap, error) {
 	}
 
 	var renderers []Component;
-	idMap := make(map[string]Component);
+	idMap := make(map[string]*Component);
 
 
 	for _,rawMessage := range rawMessages{
@@ -59,13 +59,15 @@ func UnmarshalJSONToComponent(jsonData []byte) (*DomMap, error) {
 
 		renderers = append(renderers, component);
 		if id, ok := component.GetId(); ok{
-			idMap[id] = component;
+			idMap[id] = &component;
 		}
+
 	}
 	var domMap = DomMap{
 		domSlice:renderers,
 		domMap: idMap,
 	}
+
 	return &domMap, nil;
 }
 

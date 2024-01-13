@@ -19,6 +19,7 @@ type ComponentProp struct {
 	Children  []Component `json:"children"`
 }
 
+
 func (cmp ComponentProp) GetId() (string, bool){
 	if cmp.ID != ""{
 		return cmp.ID, true;
@@ -26,7 +27,7 @@ func (cmp ComponentProp) GetId() (string, bool){
 	return "", false;
 }
 
-func (cmp ComponentProp) AddChild(component Component) {
+func (cmp *ComponentProp) AddChild(component Component) {
 	cmp.Children = append(cmp.Children, component)
 }
 
