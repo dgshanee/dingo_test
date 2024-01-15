@@ -8,6 +8,7 @@ type Component interface {
 	GetLine() int
 	AddChild(component Component)
 	GetId() (string, bool)
+	SetID(string)
 }
 
 type ComponentProp struct {
@@ -36,6 +37,10 @@ func (cmp ComponentProp) GetHeight() int {
 
 func (cmp ComponentProp) GetLine() int {
 	return cmp.Line
+}
+
+func (cmp *ComponentProp) SetID(newID string) {
+	cmp.ID = newID
 }
 
 type ComponentFactory func(jsonData json.RawMessage) (Component, error)

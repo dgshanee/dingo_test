@@ -22,3 +22,4 @@ Dingo is a CLI tool used for building transportable command-line DOMs.
  ##Render
   - How do we render the DOM tree?
   - There should be a body component that acts as the root node
+  - From there, if a DOM is empty, a new body will be created and will act as the parent

@@ -5,11 +5,14 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/thanhpk/randstr"
 )
 
 var (
 	lineMap   map[int][]components.Component
 	NUM_LINES int = 50
+	body_id   string
 )
 
 func LoadComponents() (*components.DomMap, error) {
@@ -43,6 +46,9 @@ func SaveComponent(component components.Component, parent string) {
 		fmt.Println(DOMSlice.GetSlice())
 
 	} else {
+		if body_id == "" {
+			initBody()
+		}
 		DOMSlice.AddComponent(component)
 		fmt.Println(DOMSlice.GetSlice())
 	}
@@ -57,6 +63,15 @@ func SaveComponent(component components.Component, parent string) {
 		fmt.Println("Error writing to JSON", err)
 		return
 	}
+}
+
+func initBody() {
+	var body components.BodyComponent
+	token := randstr.String(16)
+	body.SetID(token)
+	body_id = token
+	SaveComponent(&body, "")
+	fmt.Println(body)
 }
 
 func populateLineMap() {
@@ -75,11 +90,21 @@ func populateLineMap() {
 }
 
 func Display() {
-	DOMSlice, err := LoadComponents()
+	fmt.Println("Displaying")
+}
+
+func Clear() {
+	clear := []string{}
+	marshalledClear, err := json.Marshal(clear)
 	if err != nil {
-		fmt.Println("Error loading components")
+		fmt.Println("Error clearing DOM")
 		return
 	}
-	fmt.Println("Hello", DOMSlice.GetSlice())
+
+	err = os.WriteFile("structure.dingo", marshalledClear, 0644)
+	if err != nil {
+		fmt.Println("Error writing to file")
+		return
+	}
 
 }

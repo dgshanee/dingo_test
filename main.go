@@ -44,12 +44,14 @@ func buildCmd() {
 func main() {
 	dom.LoadComponents()
 	buildCmd()
-
+	fmt.Println(os.Args[1])
 	switch os.Args[1] {
 	case "build":
 		buildComponent()
 	case "display":
 		dom.Display()
+	case "clear":
+		dom.Clear()
 	default:
 		fmt.Println("Invalid command")
 		return
