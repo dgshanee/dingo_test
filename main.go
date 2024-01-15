@@ -69,6 +69,10 @@ func buildComponent() {
 		var toMarshal components.TextComponent
 		components.PopulateStruct(&toMarshal, user.Prompts)
 		dom.SaveComponent(&toMarshal, parent)
+	case "body":
+		var toMarshal components.BodyComponent
+		components.PopulateStruct(&toMarshal, user.Prompts)
+		dom.SaveComponent(&toMarshal, parent)
 	default:
 		panic("Invalid data type")
 	}

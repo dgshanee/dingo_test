@@ -7,7 +7,7 @@ type Component interface {
 	GetHeight() int
 	GetLine() int
 	AddChild(component Component)
-	GetId() (string, bool);
+	GetId() (string, bool)
 }
 
 type ComponentProp struct {
@@ -19,12 +19,11 @@ type ComponentProp struct {
 	Children  []Component `json:"children"`
 }
 
-
-func (cmp ComponentProp) GetId() (string, bool){
-	if cmp.ID != ""{
-		return cmp.ID, true;
-	} 
-	return "", false;
+func (cmp ComponentProp) GetId() (string, bool) {
+	if cmp.ID != "" {
+		return cmp.ID, true
+	}
+	return "", false
 }
 
 func (cmp *ComponentProp) AddChild(component Component) {
@@ -43,4 +42,5 @@ type ComponentFactory func(jsonData json.RawMessage) (Component, error)
 
 var componentFactories = map[string]ComponentFactory{
 	"text": TextFactory,
+	"body": BodyFactory,
 }
