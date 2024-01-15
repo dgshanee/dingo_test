@@ -17,3 +17,8 @@ Dingo is a CLI tool used for building transportable command-line DOMs.
  - How does inheritance work?
  When a user creates an element, they can set the parent of that component to a predefined ID.
  The component is then stored in the "children" class of the parent.
+
+
+ ##Render
+  - How do we render the DOM tree?
+  - There should be a body component that acts as the root node

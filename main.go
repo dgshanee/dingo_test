@@ -48,7 +48,13 @@ func main() {
 	switch os.Args[1] {
 	case "build":
 		buildComponent()
+	case "display":
+		dom.Display()
+	default:
+		fmt.Println("Invalid command")
+		return
 	}
+
 }
 
 func buildComponent() {
