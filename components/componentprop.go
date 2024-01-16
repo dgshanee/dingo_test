@@ -9,6 +9,7 @@ type Component interface {
 	AddChild(component Component)
 	GetId() (string, bool)
 	SetID(string)
+	GetComponent() string
 }
 
 type ComponentProp struct {
@@ -25,6 +26,10 @@ func (cmp ComponentProp) GetId() (string, bool) {
 		return cmp.ID, true
 	}
 	return "", false
+}
+
+func (cmp ComponentProp) GetComponent() string {
+	return cmp.Component
 }
 
 func (cmp *ComponentProp) AddChild(component Component) {

@@ -12,7 +12,7 @@ import (
 var (
 	lineMap   map[int][]components.Component
 	NUM_LINES int = 50
-	body_id   string
+	Body_id   string
 )
 
 func LoadComponents() (*components.DomMap, error) {
@@ -28,11 +28,27 @@ func LoadComponents() (*components.DomMap, error) {
 		return nil, err
 	}
 
+	searchForBody(DOMSlice.GetSlice())
+
 	return DOMSlice, nil
+}
+
+func searchForBody(comps []components.Component) {
+	for _, comp := range comps {
+		if comp.GetComponent() == "body" {
+			data, ok := comp.GetId()
+			if ok {
+				Body_id = data
+				return
+			}
+		}
+	}
 }
 
 func SaveComponent(component components.Component, parent string) {
 	DOMSlice, err := LoadComponents()
+	fmt.Println("bodyid", Body_id)
+
 	if err != nil {
 		fmt.Println("Error loading components", err)
 		return
@@ -43,14 +59,13 @@ func SaveComponent(component components.Component, parent string) {
 			return
 		}
 
-		fmt.Println(DOMSlice.GetSlice())
-
 	} else {
-		if body_id == "" {
+		if Body_id == "" {
 			initBody()
+			SaveComponent(component, Body_id)
+			return
 		}
 		DOMSlice.AddComponent(component)
-		fmt.Println(DOMSlice.GetSlice())
 	}
 	marshalledComponent, err := json.Marshal(DOMSlice.GetSlice())
 	if err != nil {
@@ -66,12 +81,16 @@ func SaveComponent(component components.Component, parent string) {
 }
 
 func initBody() {
-	var body components.BodyComponent
+	var body = components.BodyComponent{
+		components.ComponentProp{
+			Component: "body",
+		},
+	}
+
 	token := randstr.String(16)
 	body.SetID(token)
-	body_id = token
+	Body_id = token
 	SaveComponent(&body, "")
-	fmt.Println(body)
 }
 
 func populateLineMap() {

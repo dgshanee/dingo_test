@@ -44,7 +44,6 @@ func buildCmd() {
 func main() {
 	dom.LoadComponents()
 	buildCmd()
-	fmt.Println(os.Args[1])
 	switch os.Args[1] {
 	case "build":
 		buildComponent()
@@ -66,13 +65,12 @@ func buildComponent() {
 		fmt.Println("No component specified")
 		return
 	}
+	if parent == "" {
+		parent = dom.Body_id
+	}
 	switch component {
 	case "text":
 		var toMarshal components.TextComponent
-		components.PopulateStruct(&toMarshal, user.Prompts)
-		dom.SaveComponent(&toMarshal, parent)
-	case "body":
-		var toMarshal components.BodyComponent
 		components.PopulateStruct(&toMarshal, user.Prompts)
 		dom.SaveComponent(&toMarshal, parent)
 	default:
