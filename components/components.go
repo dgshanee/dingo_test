@@ -7,74 +7,97 @@ import (
 	"strings"
 )
 
-func PopulateStruct(target interface{}, data map[string]string){
-	v := reflect.ValueOf(target).Elem();
+func PopulateStruct(target interface{}, data map[string]string) {
+	v := reflect.ValueOf(target).Elem()
 
-	for i:=0; i<v.NumField(); i++{
-		field := v.Field(i);
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
 
-		if field.Kind() == reflect.Struct{
-			PopulateStruct(field.Addr().Interface(), data);
-			continue;
+		if field.Kind() == reflect.Struct {
+			PopulateStruct(field.Addr().Interface(), data)
+			continue
 		}
-		fieldName := v.Type().Field(i).Name;
+		fieldName := v.Type().Field(i).Name
 
-		key := strings.ToLower(fieldName);
+		key := strings.ToLower(fieldName)
 
-		if value, ok := data[key]; ok && field.CanSet(){
-			field.SetString(value);
+		if value, ok := data[key]; ok && field.CanSet() {
+			field.SetString(value)
 		}
 	}
 }
 
 func UnmarshalJSONToComponent(jsonData []byte) (*DomMap, error) {
-	var rawMessages []json.RawMessage;
-	if err := json.Unmarshal(jsonData, &rawMessages); err != nil{
-		return nil, err;
+	var rawMessages []json.RawMessage
+	if err := json.Unmarshal(jsonData, &rawMessages); err != nil {
+		return nil, err
 	}
 	type base struct {
-			Type string `json:"component"`
+		Type string `json:"component"`
 	}
 
-	var renderers []Component;
-	idMap := make(map[string]*Component);
+	var renderers []Component
+	idMap := make(map[string]*Component)
 
-
-	for _,rawMessage := range rawMessages{
-		var bs base;
-		if err := json.Unmarshal([]byte(rawMessage), &bs); err != nil{
-			return nil, err;
-		}
-		factory, ok := componentFactories[bs.Type];
-		if !ok{
-			fmt.Println("Unknown data type", bs.Type);
-			continue;
+	fmt.Println("len", len(rawMessages))
+	for _, rawMessage := range rawMessages {
+		var temp struct {
+			Children []json.RawMessage `json:"children"`
 		}
 
-		component, err := factory(rawMessage);
-		if err != nil{
-			fmt.Println("Error getting component", err);
-			continue;
+		if err := json.Unmarshal(rawMessage, &temp); err != nil {
+			fmt.Println("Error unmarshalling", err)
+			continue
 		}
 
-		renderers = append(renderers, component);
-		if id, ok := component.GetId(); ok{
-			idMap[id] = &component;
+		tem, err := json.Marshal(temp.Children)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		temps, err := UnmarshalJSONToComponent([]byte(tem))
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		fmt.Println("temps", *temps)
+
+		var bs base
+		if err := json.Unmarshal([]byte(rawMessage), &bs); err != nil {
+			return nil, err
+		}
+		factory, ok := componentFactories[bs.Type]
+		if !ok {
+			fmt.Println("Unknown data type", bs.Type)
+			continue
+		}
+
+		component, err := factory(rawMessage)
+		if err != nil {
+			fmt.Println("Error getting component", err)
+			continue
+		}
+
+		renderers = append(renderers, component)
+		if id, ok := component.GetId(); ok {
+			idMap[id] = &component
 		}
 
 	}
 	var domMap = DomMap{
-		domSlice:renderers,
-		domMap: idMap,
+		domSlice: renderers,
+		domMap:   idMap,
 	}
 
-	return &domMap, nil;
+	return &domMap, nil
 }
 
-func UnmarshalJSON[T any](jsonData []byte)(T, error){
-	var t T;
-	if err := json.Unmarshal(jsonData, &t); err != nil{
-		return *new(T), err;
+func UnmarshalJSON[T any](jsonData []byte) (T, error) {
+	var t T
+	if err := json.Unmarshal(jsonData, &t); err != nil {
+		return *new(T), err
 	}
-	return t, nil;
+	return t, nil
 }

@@ -60,11 +60,6 @@ func SaveComponent(component components.Component, parent string) {
 		}
 
 	} else {
-		if Body_id == "" {
-			initBody()
-			SaveComponent(component, Body_id)
-			return
-		}
 		DOMSlice.AddComponent(component)
 	}
 	marshalledComponent, err := json.Marshal(DOMSlice.GetSlice())
@@ -110,6 +105,7 @@ func populateLineMap() {
 
 func Display() {
 	fmt.Println("Displaying")
+	LoadComponents()
 }
 
 func Clear() {

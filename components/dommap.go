@@ -1,5 +1,7 @@
 package components
 
+import "fmt"
+
 type DomMap struct {
 	domSlice []Component
 	domMap   map[string]*Component
@@ -15,6 +17,7 @@ func (dm *DomMap) GetSlice() []Component {
 
 func (dm *DomMap) GetComponentById(id string) (Component, bool) {
 	res, ok := dm.domMap[id]
+	fmt.Println("Component by id", *res)
 	return *res, ok
 }
 
